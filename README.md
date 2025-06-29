@@ -1,8 +1,11 @@
 # PortPal Connector logic
 
+Using an ESP32S3-devkitc-1 for developing
+
 Working on a simple Bluetooth LE to USB bridge to send commands from an iPhone app 
 
 All testing is currently being done on an AnyCubic 3d printer by sending Gcode commands.
+
 
 
 # Plan
