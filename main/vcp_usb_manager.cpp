@@ -103,9 +103,6 @@ namespace
     }
 }
 
-
-
-
 /**
  * @brief Main application
  *
@@ -115,6 +112,7 @@ void vcp_usb_manager::vcp_usb_manager_run(void *arg)
 {
     device_disconnected_sem = xSemaphoreCreateBinary();
     assert(device_disconnected_sem);
+    char* rxmesage;
 
     // Install USB Host driver. Should only be called once in entire application
     ESP_LOGI(TAG, "Installing USB Host");
@@ -134,8 +132,9 @@ void vcp_usb_manager::vcp_usb_manager_run(void *arg)
     VCP::register_driver<FT23x>();
     VCP::register_driver<CP210x>();
     VCP::register_driver<CH34x>();
-        // Do everything else in a loop, so we can demonstrate USB device reconnections
-    while (true) {
+    // Do everything else in a loop, so we can demonstrate USB device reconnections
+    while (true)
+    {
         const cdc_acm_host_device_config_t dev_config = {
             .connection_timeout_ms = 5000, // 5 seconds, enough time to plug the device in or experiment with timeout
             .out_buffer_size = 512,
@@ -149,7 +148,8 @@ void vcp_usb_manager::vcp_usb_manager_run(void *arg)
         ESP_LOGI(TAG, "Opening any VCP device...");
         auto vcp = std::unique_ptr<CdcAcmDevice>(VCP::open(&dev_config));
 
-        if (vcp == nullptr) {
+        if (vcp == nullptr)
+        {
             ESP_LOGI(TAG, "Failed to open VCP device");
             continue;
         }
@@ -171,13 +171,20 @@ void vcp_usb_manager::vcp_usb_manager_run(void *arg)
         ESP_ERROR_CHECK(vcp->set_control_line_state(false, true));
         ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t *)"Test string", 12));
         */
+        if (usbCommandQueue != 0)
+        {
 
+            if ((xQueuePeek(usbCommandQueue, &(rxmesage), 10)) == pdTRUE)
+            {
+                printf("value received on queue: %s \n", rxmesage);
+                vTaskDelay(1500 / portTICK_PERIOD_MS); // wait for 500 ms
+            }
+        }
         // Send some dummy data
         ESP_LOGI(TAG, "Sending data through CdcAcmDevice");
         uint8_t gcode[] = "G0 X200 Y200 F40000\n";
         ESP_ERROR_CHECK(vcp->tx_blocking(gcode, sizeof(gcode) - 1));
         ESP_ERROR_CHECK(vcp->set_control_line_state(true, true));
-        
 
         // We are done. Wait for device disconnection and start over
         ESP_LOGI(TAG, "Done. You can reconnect the VCP device to run again.");

@@ -1,5 +1,7 @@
 #include "queue_manager.h"
 
+#define QUEUE_LENGTH 10
+
 QueueHandle_t usbCommandQueue = NULL;
 
 // for now I will push incoming commands for the bridge here in a shared queue
@@ -8,4 +10,5 @@ QueueHandle_t usbCommandQueue = NULL;
 void initialize_queues()
 {
     // do more research into what to do here
+    usbCommandQueue = xQueueCreate(QUEUE_LENGTH, sizeof(char*));
 }
