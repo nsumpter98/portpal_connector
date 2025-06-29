@@ -14,6 +14,8 @@ namespace
         initialize_queues();
         const char *initialStr = "G28";
         xQueueSend(usbCommandQueue, &initialStr, 0);
+        const char *initialStr2 = "G28 X";
+        xQueueSend(usbCommandQueue, &initialStr2, 0);
         ESP_LOGI(TAG, "Entering main");
 
         ESP_LOGI(TAG, "Starting usb manager task...");
@@ -23,7 +25,6 @@ namespace
             4 * 1028,
             NULL,
             10,
-            NULL
-        );
+            NULL);
     }
 }
