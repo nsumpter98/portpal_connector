@@ -169,6 +169,7 @@ extern "C" void app_main(void)
         uint8_t gcode[] = "G0 X200 Y200 F40000\n";
         ESP_ERROR_CHECK(vcp->tx_blocking(gcode, sizeof(gcode) - 1));
         ESP_ERROR_CHECK(vcp->set_control_line_state(true, true));
+        
 
         // We are done. Wait for device disconnection and start over
         ESP_LOGI(TAG, "Done. You can reconnect the VCP device to run again.");
