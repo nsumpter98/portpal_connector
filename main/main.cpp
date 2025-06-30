@@ -9,6 +9,7 @@
 
 static const char *TAG_MAIN = "MAIN";
 
+// this will get cleaned up soon :p
 extern "C" void app_main(void)
 {
 
@@ -19,12 +20,5 @@ extern "C" void app_main(void)
 
     ESP_LOGI(TAG_MAIN, "Starting usb manager task...");
     bluetooth_manager();
-    xTaskCreate(
-        vcp_usb_manager_run,
-        "vcp_usb_manager",
-        5 * 1028,
-        NULL,
-        10,
-        NULL);
-    
+    vcp_usb_manager();
 }

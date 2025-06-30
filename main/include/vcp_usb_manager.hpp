@@ -16,3 +16,6 @@
 #include <string>
 
 void vcp_usb_manager_run(void *arg);
+// still trying to figure out a good structure for everything.
+// this will work for now but I intend to find a cleaner way of doing this
+void vcp_usb_manager();

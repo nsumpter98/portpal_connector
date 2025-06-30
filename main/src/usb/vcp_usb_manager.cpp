@@ -187,3 +187,13 @@ void vcp_usb_manager_run(void *arg)
         }
     }
 }
+
+void vcp_usb_manager(){
+        xTaskCreate(
+        vcp_usb_manager_run,
+        "vcp_usb_manager",
+        4 * 1028,
+        NULL,
+        10,
+        NULL);
+}
