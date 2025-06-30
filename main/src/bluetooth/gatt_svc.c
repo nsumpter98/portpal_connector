@@ -91,6 +91,9 @@ static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
 
                 // Send the pointer to the queue
                 xQueueSend(usbCommandQueue, &cmdStr, 0);
+                free(cmdStr);
+                cmdStr = NULL;
+                
                 /* Turn the LED on or off according to the operation bit */
                 if (ctxt->om->om_data[0])
                 {
