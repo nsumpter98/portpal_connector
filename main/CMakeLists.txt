@@ -1,5 +1,5 @@
-idf_component_register(
-    SRCS "queue_manager.cpp" "vcp_usb_manager.cpp" "main.cpp"
-    INCLUDE_DIRS "."
-    PRIV_REQUIRES usb
-    )
+file(GLOB_RECURSE srcs "main.cpp" "src/*.cpp" "src/*.c")
+
+idf_component_register(SRCS "${srcs}"
+                        PRIV_REQUIRES usb    
+                        INCLUDE_DIRS "./include" ".")

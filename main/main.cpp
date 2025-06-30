@@ -1,4 +1,3 @@
-#include <esp_log.h>
 #include "esp_mac.h"
 #include "freertos/FreeRTOS.h"
 #include "vcp_usb_manager.h"
