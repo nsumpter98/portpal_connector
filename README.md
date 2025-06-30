@@ -1,4 +1,5 @@
 # PortPal Connector logic
+## Keep in mind this is POC and will likely be completely chaged in a refactor after it has been proved out
 
 Using an ESP32S3-devkitc-1 for developing
 
