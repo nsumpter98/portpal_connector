@@ -17,7 +17,13 @@
 #define BLE_GAP_LE_ROLE_PERIPHERAL 0x00
 
 /* Public function declarations */
-void adv_init(void);
-int gap_init(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+    void adv_init(void);
+    int gap_init(void);
+#ifdef __cplusplus
+}
+#endif
 
 #endif // GAP_SVC_H

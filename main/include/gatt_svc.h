@@ -15,10 +15,16 @@
 /* NimBLE GAP APIs */
 #include "host/ble_gap.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* Public function declarations */
 void send_heart_rate_indication(void);
 void gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg);
 void gatt_svr_subscribe_cb(struct ble_gap_event *event);
 int gatt_svc_init(void);
+#ifdef __cplusplus
+}
+#endif
 
 #endif // GATT_SVR_H
