@@ -15,8 +15,9 @@ using namespace esp_usb;
 
 namespace
 {
-    static const char *TAG = "VCP example";
+    static const char *TAG = "VCP MANAGER";
     static SemaphoreHandle_t device_disconnected_sem;
+    static SemaphoreHandle_t ok_received_sem;
 
     /**
      * @brief Data received callback
@@ -32,7 +33,21 @@ namespace
      */
     static bool handle_rx(const uint8_t *data, size_t data_len, void *arg)
     {
-        printf("%.*s", data_len, data);
+        printf("%.*s", (int)data_len, data);
+
+        // Check for "ok" in the received data
+        if (data_len >= 2)
+        {
+            for (size_t i = 0; i < data_len - 1; ++i)
+            {
+                if (data[i] == 'o' && data[i + 1] == 'k')
+                {
+                    xSemaphoreGive(ok_received_sem);
+                    break;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -94,10 +109,12 @@ namespace
  *
  * This function shows how you can use Virtual COM Port drivers
  */
-void vcp_usb_manager::vcp_usb_manager_run(void *arg)
+void vcp_usb_manager_run(void *arg)
 {
     device_disconnected_sem = xSemaphoreCreateBinary();
     assert(device_disconnected_sem);
+    ok_received_sem = xSemaphoreCreateBinary();
+    assert(ok_received_sem);
     char *rxmesage;
 
     // Install USB Host driver. Should only be called once in entire application
@@ -115,78 +132,58 @@ void vcp_usb_manager::vcp_usb_manager_run(void *arg)
     ESP_ERROR_CHECK(cdc_acm_host_install(NULL));
 
     // Register VCP drivers to VCP service
-    VCP::register_driver<FT23x>();
-    VCP::register_driver<CP210x>();
     VCP::register_driver<CH34x>();
 
     while (1)
     {
         if (usbCommandQueue != 0)
         {
+            const cdc_acm_host_device_config_t dev_config = {
+                .connection_timeout_ms = 5000, // 5 seconds, enough time to plug the device in or experiment with timeout
+                .out_buffer_size = 512,
+                .in_buffer_size = 512,
+                .event_cb = handle_event,
+                .data_cb = handle_rx,
+                .user_arg = NULL,
+            };
 
-            if ((xQueueReceive(usbCommandQueue, &(rxmesage), 10)) == pdTRUE)
+            // You don't need to know the device's VID and PID. Just plug in any device and the VCP service will load correct (already registered) driver for the device
+            ESP_LOGI(TAG, "Opening any VCP device...");
+            auto vcp = std::unique_ptr<CdcAcmDevice>(VCP::open(&dev_config));
+
+            if (vcp == nullptr)
             {
-                printf("value received on queue: %s \n", rxmesage);
-                vTaskDelay(1500 / portTICK_PERIOD_MS); // wait for 500 ms
+                ESP_LOGI(TAG, "Failed to open VCP device");
+                continue;
             }
+            vTaskDelay(10);
+            ESP_LOGI(TAG, "Setting up line coding");
+            cdc_acm_line_coding_t line_coding = {
+                .dwDTERate = EXAMPLE_BAUDRATE,
+                .bCharFormat = EXAMPLE_STOP_BITS,
+                .bParityType = EXAMPLE_PARITY,
+                .bDataBits = EXAMPLE_DATA_BITS,
+            };
+
+            while (1)
+            {
+                if ((xQueueReceive(usbCommandQueue, &(rxmesage), 10)) == pdTRUE)
+                {
+                    ESP_ERROR_CHECK(vcp->line_coding_set(&line_coding));
+
+                    // Send some dummy data
+                    ESP_LOGI(TAG, "Sending data through CdcAcmDevice %s", rxmesage);
+                    ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t *)rxmesage, strlen(rxmesage)));
+                    ESP_ERROR_CHECK(vcp->set_control_line_state(true, true));
+                    ESP_LOGI(TAG, "Waiting for device 'ok'...");
+                    xSemaphoreTake(ok_received_sem, portMAX_DELAY);
+                }
+            }
+
+            // We are done. Wait for device disconnection and start over
+            ESP_LOGI(TAG, "Done. You can reconnect the VCP device to run again.");
+            xSemaphoreTake(device_disconnected_sem, portMAX_DELAY);
+            ESP_LOGI(TAG, "end");
         }
     }
-    // Do everything else in a loop, so we can demonstrate USB device reconnections
-    // while (true)
-    // {
-    //     const cdc_acm_host_device_config_t dev_config = {
-    //         .connection_timeout_ms = 5000, // 5 seconds, enough time to plug the device in or experiment with timeout
-    //         .out_buffer_size = 512,
-    //         .in_buffer_size = 512,
-    //         .event_cb = handle_event,
-    //         .data_cb = handle_rx,
-    //         .user_arg = NULL,
-    //     };
-
-    //     // You don't need to know the device's VID and PID. Just plug in any device and the VCP service will load correct (already registered) driver for the device
-    //     ESP_LOGI(TAG, "Opening any VCP device...");
-    //     auto vcp = std::unique_ptr<CdcAcmDevice>(VCP::open(&dev_config));
-
-    //     if (vcp == nullptr)
-    //     {
-    //         ESP_LOGI(TAG, "Failed to open VCP device");
-    //         continue;
-    //     }
-    //     vTaskDelay(10);
-
-    //     ESP_LOGI(TAG, "Setting up line coding");
-    //     cdc_acm_line_coding_t line_coding = {
-    //         .dwDTERate = EXAMPLE_BAUDRATE,
-    //         .bCharFormat = EXAMPLE_STOP_BITS,
-    //         .bParityType = EXAMPLE_PARITY,
-    //         .bDataBits = EXAMPLE_DATA_BITS,
-    //     };
-    //     ESP_ERROR_CHECK(vcp->line_coding_set(&line_coding));
-
-    //     /*
-    //     Now the USB-to-UART converter is configured and receiving data.
-    //     You can use standard CDC-ACM API to interact with it. E.g.
-
-    //     ESP_ERROR_CHECK(vcp->set_control_line_state(false, true));
-    //     ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t *)"Test string", 12));
-    //     */
-    //     if (usbCommandQueue != 0)
-    //     {
-
-    //         if ((xQueuePeek(usbCommandQueue, &(rxmesage), 10)) == pdTRUE)
-    //         {
-    //             printf("value received on queue: %s \n", rxmesage);
-    //             vTaskDelay(1500 / portTICK_PERIOD_MS); // wait for 500 ms
-    //         }
-    //     }
-    //     // Send some dummy data
-    //     ESP_LOGI(TAG, "Sending data through CdcAcmDevice");
-    //     uint8_t gcode[] = "G0 X200 Y200 F40000\n";
-    //     ESP_ERROR_CHECK(vcp->tx_blocking(gcode, sizeof(gcode) - 1));
-    //     ESP_ERROR_CHECK(vcp->set_control_line_state(true, true));
-
-    //     // We are done. Wait for device disconnection and start over
-    //     ESP_LOGI(TAG, "Done. You can reconnect the VCP device to run again.");
-    //     xSemaphoreTake(device_disconnected_sem, portMAX_DELAY);
-    // }
 }
