@@ -6,7 +6,7 @@
 /* Includes */
 #include "gatt_svc.h"
 #include "common.h"
-
+#include "queue_manager.h"
 
 /* Private function declarations */
 static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
@@ -72,17 +72,34 @@ static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
         if (attr_handle == led_chr_val_handle)
         {
             /* Verify access buffer length */
-            if (ctxt->om->om_len == 1)
+            if (ctxt->om->om_len >= 1)
             {
+                // Allocate buffer for the string (+1 for null terminator)
+                char *cmdStr = malloc(ctxt->om->om_len + 2);
+                if (cmdStr == NULL)
+                {
+                    ESP_LOGE(TAG, "malloc failed");
+                    goto error;
+                }
+
+                // Copy data and null-terminate
+                memcpy(cmdStr, ctxt->om->om_data, ctxt->om->om_len);
+                cmdStr[ctxt->om->om_len] = '\n';     // Add newline
+                cmdStr[ctxt->om->om_len + 1] = '\0'; // Null-terminate
+
+                ESP_LOGI(TAG, "Received GATT write: %s", cmdStr);
+
+                // Send the pointer to the queue
+                xQueueSend(usbCommandQueue, &cmdStr, 0);
                 /* Turn the LED on or off according to the operation bit */
                 if (ctxt->om->om_data[0])
                 {
-                    //led_on();
+                    // led_on();
                     ESP_LOGI(TAG, "led turned on!");
                 }
                 else
                 {
-                    //led_off();
+                    // led_off();
                     ESP_LOGI(TAG, "led turned off!");
                 }
             }

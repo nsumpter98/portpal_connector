@@ -33,6 +33,6 @@
 
 /* Defines */
 #define TAG "NimBLE_GATT_Server"
-#define DEVICE_NAME "NimBLE_GATT"
+#define DEVICE_NAME "PortPal"
 
 #endif // COMMON_H
