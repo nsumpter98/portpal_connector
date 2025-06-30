@@ -7,8 +7,13 @@
 #define GATT_SVR_H
 
 /* Includes */
-#include "esp_gatts_api.h"
+/* NimBLE GATT APIs */
+#include "host/ble_gatt.h"
+#include "services/gatt/ble_svc_gatt.h"
 
+
+/* NimBLE GAP APIs */
+#include "host/ble_gap.h"
 
 /* Public function declarations */
 void send_heart_rate_indication(void);

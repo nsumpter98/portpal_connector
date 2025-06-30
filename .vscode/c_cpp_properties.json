@@ -7,9 +7,6 @@
       "includePath": [
         "${config:idf.espIdfPath}/components/bt/host",
         "${config:idf.espIdfPath}/components/bt/include",
-        "${config:idf.espIdfPath}/components/nimble/include",
-        "${config:idf.espIdfPath}/components/**",
-        "${workspaceFolder}/**",
         "${workspaceFolder}/main/include",
         "${workspaceFolder}/build/config/"
       ],
