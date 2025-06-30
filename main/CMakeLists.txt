@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS "cdc_acm_vcp_example_main.cpp"
+    SRCS "queue_manager.cpp" "vcp_usb_manager.cpp" "main.cpp"
     INCLUDE_DIRS "."
     PRIV_REQUIRES usb
     )
