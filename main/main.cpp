@@ -1,11 +1,11 @@
 #include "esp_mac.h"
 #include "freertos/FreeRTOS.h"
 #include "vcp_usb_manager.hpp"
-#include "queue_manager.h"
-#include "common.h"
-#include "gap.h"
-#include "gatt_svc.h"
-#include "bluetooth_manager.h"
+#include "queue_manager.hpp"
+#include "common.hpp"
+#include "gap.hpp"
+#include "gatt_svc.hpp"
+#include "bluetooth_manager.hpp"
 
 static const char *TAG_MAIN = "MAIN";
 

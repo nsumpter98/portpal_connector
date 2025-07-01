@@ -174,6 +174,11 @@ void vcp_usb_manager_run(void *arg)
                     // Send some dummy data
                     ESP_LOGI(TAG, "Sending data through CdcAcmDevice %s", rxmesage);
                     ESP_ERROR_CHECK(vcp->tx_blocking((uint8_t *)rxmesage, strlen(rxmesage)));
+                    // free up the pointer here and reset it to nullptr;
+                    // I was trying to do this in gatt_svc file and was wondering why I was receiving garble here... 
+                    // hmm strange right?!? NOT!
+                    free(rxmesage);
+                    rxmesage = nullptr;
                     ESP_ERROR_CHECK(vcp->set_control_line_state(true, true));
                     ESP_LOGI(TAG, "Waiting for device 'ok'...");
                     xSemaphoreTake(ok_received_sem, portMAX_DELAY);

@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
 /* Includes */
-#include "gatt_svc.h"
-#include "common.h"
-#include "queue_manager.h"
+#include "gatt_svc.hpp"
+#include "common.hpp"
+#include "queue_manager.hpp"
 
 /* Private function declarations */
 static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
@@ -75,7 +75,7 @@ static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
             if (ctxt->om->om_len >= 1)
             {
                 // Allocate buffer for the string (+1 for null terminator)
-                char *cmdStr = malloc(ctxt->om->om_len + 2);
+                char* cmdStr = (char*)malloc(ctxt->om->om_len + 2);
                 if (cmdStr == NULL)
                 {
                     ESP_LOGE(TAG, "malloc failed");
@@ -91,8 +91,6 @@ static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
 
                 // Send the pointer to the queue
                 xQueueSend(usbCommandQueue, &cmdStr, 0);
-                free(cmdStr);
-                cmdStr = NULL;
                 
                 /* Turn the LED on or off according to the operation bit */
                 if (ctxt->om->om_data[0])

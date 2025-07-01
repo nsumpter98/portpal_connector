@@ -1,8 +1,15 @@
-#include "common.h"
-#include "gap.h"
-#include "gatt_svc.h"
+#include "common.hpp"
+#include "gap.hpp"
+#include "gatt_svc.hpp"
 
-void ble_store_config_init(void);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+    void ble_store_config_init(void);
+#ifdef __cplusplus
+}
+#endif
 
 static void on_stack_reset(int reason)
 {
@@ -40,8 +47,9 @@ static void nimble_host_task(void *param)
     vTaskDelete(NULL);
 }
 
-void bluetooth_manager(){
-        /* Local variables */
+void bluetooth_manager()
+{
+    /* Local variables */
     int rc;
     esp_err_t ret;
 
@@ -89,7 +97,7 @@ void bluetooth_manager(){
         ESP_LOGE(TAG, "failed to initialize GATT server, error code: %d", rc);
         return;
     }
-       /* NimBLE host configuration initialization */
+    /* NimBLE host configuration initialization */
     nimble_host_config_init();
 
     xTaskCreate(nimble_host_task, "NimBLE Host", 4 * 1024, NULL, 5, NULL);
