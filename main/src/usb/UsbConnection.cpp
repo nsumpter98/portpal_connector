@@ -22,7 +22,7 @@ UsbConnection::~UsbConnection()
     vSemaphoreDelete(device_disconnected_sem);
 }
 
-static void usb_lib_task(void *arg)
+void UsbConnection::usb_lib_task(void *arg)
 {
     while (1)
     {

@@ -1,12 +1,26 @@
 #include "Connection.hpp"
-#include "usb/vcp_usb_manager.hpp"
 #include <memory>
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "esp_log.h"
 #include <cstring>
 #include <cassert>
+#include "queue_manager.hpp"
+#include <stdio.h>
+#include <string.h>
 
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/semphr.h"
+
+#include "usb/cdc_acm_host.h"
+#include "usb/vcp_ch34x.hpp"
+#include "usb/vcp_cp210x.hpp"
+#include "usb/vcp_ftdi.hpp"
+#include "usb/vcp.hpp"
+#include "usb/usb_host.h"
+#include <string>
 
 class UsbConnection : public Connection
 {
@@ -20,6 +34,7 @@ public:
 
 private:
     std::unique_ptr<CdcAcmDevice> vcp;
+    static void usb_lib_task(void *arg);
     SemaphoreHandle_t ok_received_sem;
     SemaphoreHandle_t device_disconnected_sem;
     static bool handle_rx(const uint8_t *data, size_t data_len, void *arg);
