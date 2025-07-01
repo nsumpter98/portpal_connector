@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: CC0-1.0
  */
-#include "vcp_usb_manager.hpp"
+#include "usb/vcp_usb_manager.hpp"
 
 using namespace esp_usb;
 

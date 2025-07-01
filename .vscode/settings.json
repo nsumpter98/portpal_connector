@@ -1,8 +1,8 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
   "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
-  "idf.espIdfPath": "/Users/nathanaelsumpter/esp/esp-idf",
-  "idf.pythonInstallPath": "/Users/nathanaelsumpter/.espressif/python_env/idf5.5_py3.13_env/bin/python3",
+  "idf.espIdfPath": "/Users/nathanaelsumpter/esp/v5.4.1/esp-idf",
+  "idf.pythonInstallPath": "/Users/nathanaelsumpter/.espressif/python_env/idf5.5_py3.13_env/bin/python",
   "idf.openOcdConfigs": ["board/esp32s3-builtin.cfg"],
   "idf.port": "/dev/tty.usbserial-21420",
   "idf.toolsPath": "/Users/nathanaelsumpter/.espressif",

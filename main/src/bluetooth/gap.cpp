@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
 /* Includes */
-#include "gap.hpp"
+#include "bluetooth/gap.hpp"
 #include "common.hpp"
 
 /* Private function declarations */

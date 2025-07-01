@@ -1,11 +1,6 @@
 #include "esp_mac.h"
-#include "freertos/FreeRTOS.h"
-#include "vcp_usb_manager.hpp"
-#include "queue_manager.hpp"
-#include "common.hpp"
-#include "gap.hpp"
-#include "gatt_svc.hpp"
-#include "bluetooth_manager.hpp"
+#include "usb/vcp_usb_manager.hpp"
+#include "bluetooth/bluetooth_manager.hpp"
 
 static const char *TAG_MAIN = "MAIN";
 
@@ -13,7 +8,7 @@ static const char *TAG_MAIN = "MAIN";
 extern "C" void app_main(void)
 {
 
-    ESP_LOGI(TAG, "Adding test to queue");
+    ESP_LOGI(TAG_MAIN, "Adding test to queue");
 
     initialize_queues();
     ESP_LOGI(TAG_MAIN, "Entering main");
