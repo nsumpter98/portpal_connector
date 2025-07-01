@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Unlicense OR CC0-1.0
  */
 /* Includes */
-#include "gatt_svc.hpp"
+#include "bluetooth/gatt_svc.hpp"
 #include "common.hpp"
 #include "queue_manager.hpp"
 

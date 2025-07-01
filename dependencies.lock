@@ -68,7 +68,7 @@ dependencies:
   idf:
     source:
       type: idf
-    version: 5.5.0
+    version: 5.4.1
 direct_dependencies:
 - espressif/usb_host_ch34x_vcp
 - espressif/usb_host_cp210x_vcp

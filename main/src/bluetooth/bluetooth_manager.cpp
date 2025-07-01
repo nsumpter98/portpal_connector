@@ -1,6 +1,6 @@
 #include "common.hpp"
-#include "gap.hpp"
-#include "gatt_svc.hpp"
+#include "bluetooth/gap.hpp"
+#include "bluetooth/gatt_svc.hpp"
 
 #ifdef __cplusplus
 extern "C"
