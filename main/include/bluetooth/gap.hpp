@@ -26,6 +26,9 @@ public:
     int gap_init(void);
 
 private:
+    // had to make all these static because of the ble_gap_adv_start function in the ble_gap_adv_start method.
+    // I think this is because that function is expecting a standard c pointer and I was trying to pass a member
+    // of this class. would like to find a better way to do this in the future.
     static void print_conn_desc(struct ble_gap_conn_desc *desc);
     static void format_addr(char *addr_str, uint8_t addr[]);
     static int gap_event_handler(struct ble_gap_event *event, void *arg);
