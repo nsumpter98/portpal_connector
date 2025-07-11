@@ -5,7 +5,6 @@
  */
 /* Includes */
 #include "bluetooth/gap.hpp"
-#include "common.hpp"
 
 /* Private function declarations */
 inline static void format_addr(char *addr_str, uint8_t addr[]);
