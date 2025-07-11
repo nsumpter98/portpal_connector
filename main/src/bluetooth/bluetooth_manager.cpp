@@ -11,6 +11,8 @@ extern "C"
 }
 #endif
 
+Gap g = Gap();
+
 static void on_stack_reset(int reason)
 {
     /* On reset, print reset reason to console */
@@ -20,7 +22,7 @@ static void on_stack_reset(int reason)
 static void on_stack_sync(void)
 {
     /* On stack sync, do advertising initialization */
-    adv_init();
+    g.advertizing_init();
 }
 
 static void nimble_host_config_init(void)
@@ -83,7 +85,7 @@ void bluetooth_manager()
     }
 
     /* GAP service initialization */
-    rc = gap_init();
+    rc = g.gap_init();
     if (rc != 0)
     {
         ESP_LOGE(TAG, "failed to initialize GAP service, error code: %d", rc);
