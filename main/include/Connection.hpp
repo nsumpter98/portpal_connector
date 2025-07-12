@@ -9,7 +9,4 @@ public:
     virtual void close() = 0;
     virtual bool send(uint8_t *data, size_t len) = 0;
     virtual bool receive(uint8_t *data, size_t maxLen, size_t &receivedLen) = 0;
-
-protected:
-    Connection();
 };

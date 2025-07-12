@@ -12,6 +12,8 @@
 #define BLE_GAP_URI_PREFIX_HTTPS 0x17
 #define BLE_GAP_LE_ROLE_PERIPHERAL 0x00
 
+// GAP (Generic Access Profile) layer defines the connection behaviors between Bluetooth LE devices and the roles they play in the connection.
+// Ref: https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32s3/api-guides/ble/get-started/ble-introduction.html#:~:text=The-,GAP,-(Generic%20Access%20Profile
 // since we only plan to use portpal as a peripheral device I wont focus any on scanning.
 // currently referencing the following docs to build this out: https://docs.espressif.com/projects/esp-idf/en/v5.4.2/esp32s3/api-guides/ble/get-started/ble-introduction.html
 class Gap
