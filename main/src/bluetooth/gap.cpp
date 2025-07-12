@@ -93,6 +93,8 @@ void Gap::format_addr(char *addr_str, uint8_t addr[])
             addr[2], addr[3], addr[4], addr[5]);
 }
 
+// gpt wrote this. this allows be to access members of the class through a c callback.
+// need to look into this further to understand exactly what is going on.
 int Gap::gap_event_handler(struct ble_gap_event *event, void *arg)
 {
     Gap* self = static_cast<Gap*>(arg); // <--- Cast the void* back to Gap*
@@ -299,6 +301,9 @@ void Gap::start_advertising(void)
     adv_params.itvl_max = BLE_GAP_ADV_ITVL_MS(510);
 
     /* Start advertising */
+    // ok so here I have to pass in 'this' as an optional arg to keep a reference to this original instance of 
+    // the object. I did a test where I passed in null and tried to access a member variable and the program crashed but ran fine
+    // when 'this' is passed through
     rc = ble_gap_adv_start(own_addr_type, NULL, BLE_HS_FOREVER, &adv_params,
                            gap_event_handler, this);
     if (rc != 0)
