@@ -95,6 +95,12 @@ void Gap::format_addr(char *addr_str, uint8_t addr[])
 
 int Gap::gap_event_handler(struct ble_gap_event *event, void *arg)
 {
+    Gap* self = static_cast<Gap*>(arg); // <--- Cast the void* back to Gap*
+    return self->handle_gap_event(event); // <--- Call a non-static member
+}
+
+int Gap::handle_gap_event(struct ble_gap_event *event)
+{
     /* Local variables */
     int rc = 0;
     struct ble_gap_conn_desc desc;
@@ -294,7 +300,7 @@ void Gap::start_advertising(void)
 
     /* Start advertising */
     rc = ble_gap_adv_start(own_addr_type, NULL, BLE_HS_FOREVER, &adv_params,
-                           gap_event_handler, NULL);
+                           gap_event_handler, this);
     if (rc != 0)
     {
         ESP_LOGE(TAG, "failed to start advertising, error code: %d", rc);
