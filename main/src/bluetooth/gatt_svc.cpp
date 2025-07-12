@@ -1,12 +1,4 @@
-/*
- * SPDX-FileCopyrightText: 2024 Espressif Systems (Shanghai) CO LTD
- *
- * SPDX-License-Identifier: Unlicense OR CC0-1.0
- */
-/* Includes */
 #include "bluetooth/gatt_svc.hpp"
-#include "common.hpp"
-#include "queue_manager.hpp"
 
 /* Private function declarations */
 static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
@@ -21,25 +13,25 @@ static const ble_uuid128_t led_chr_uuid =
     BLE_UUID128_INIT(0x23, 0xd1, 0xbc, 0xea, 0x5f, 0x78, 0x23, 0x15, 0xde, 0xef,
                      0x12, 0x12, 0x25, 0x15, 0x00, 0x00);
 
-/* GATT services table */
-static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
-    /* Automation IO service */
-    {
-        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-        .uuid = &auto_io_svc_uuid.u,
-        .characteristics =
-            (struct ble_gatt_chr_def[]){/* LED characteristic */
-                                        {.uuid = &led_chr_uuid.u,
-                                         .access_cb = led_chr_access,
-                                         .flags = BLE_GATT_CHR_F_WRITE,
-                                         .val_handle = &led_chr_val_handle},
-                                        {0}},
-    },
+// /* GATT services table */
+// const struct ble_gatt_svc_def gatt_svr_svcs[] = {
+//     /* Automation IO service */
+//     {
+//         .type = BLE_GATT_SVC_TYPE_PRIMARY,
+//         .uuid = &auto_io_svc_uuid.u,
+//         .characteristics =
+//             (struct ble_gatt_chr_def[]){/* LED characteristic */
+//                                         {.uuid = &led_chr_uuid.u,
+//                                          .access_cb = led_chr_access,
+//                                          .flags = BLE_GATT_CHR_F_WRITE,
+//                                          .val_handle = &led_chr_val_handle},
+//                                         {0}},
+//     },
 
-    {
-        0, /* No more services. */
-    },
-};
+//     {
+//         0, /* No more services. */
+//     },
+// };
 
 /* Private functions */
 static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
@@ -75,7 +67,7 @@ static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
             if (ctxt->om->om_len >= 1)
             {
                 // Allocate buffer for the string (+1 for null terminator)
-                char* cmdStr = (char*)malloc(ctxt->om->om_len + 2);
+                char *cmdStr = (char *)malloc(ctxt->om->om_len + 2);
                 if (cmdStr == NULL)
                 {
                     ESP_LOGE(TAG, "malloc failed");
@@ -91,7 +83,7 @@ static int led_chr_access(uint16_t conn_handle, uint16_t attr_handle,
 
                 // Send the pointer to the queue
                 xQueueSend(usbCommandQueue, &cmdStr, 0);
-                
+
                 /* Turn the LED on or off according to the operation bit */
                 if (ctxt->om->om_data[0])
                 {
@@ -124,14 +116,14 @@ error:
     return BLE_ATT_ERR_UNLIKELY;
 }
 
-/* Public functions */
-/*
- *  Handle GATT attribute register events
- *      - Service register event
- *      - Characteristic register event
- *      - Descriptor register event
- */
-void gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg)
+
+
+void GattSvc::add_ble_gatt_svc(struct ble_gatt_svc_def gatt_svc)
+{
+    gatt_svcs.push_back(gatt_svc);
+}
+
+void GattSvc::gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg)
 {
     /* Local variables */
     char buf[BLE_UUID_STR_LEN];
@@ -170,16 +162,14 @@ void gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg)
     }
 }
 
-/*
- *  GATT server initialization
- *      1. Initialize GATT service
- *      2. Update NimBLE host GATT services counter
- *      3. Add GATT services to server
- */
-int gatt_svc_init(void)
+int GattSvc::gatt_svc_init(void)
 {
     /* Local variables */
     int rc;
+
+    // copy the contents of the vector into the array
+    struct ble_gatt_svc_def gatt_svr_svcs[gatt_svcs.size()];
+    std::copy(gatt_svcs.begin(), gatt_svcs.end(), gatt_svr_svcs);
 
     /* 1. GATT service initialization */
     ble_svc_gatt_init();
