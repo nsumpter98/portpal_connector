@@ -95,10 +95,11 @@ void Gap::format_addr(char *addr_str, uint8_t addr[])
 
 // gpt wrote this. this allows me to access members of the class through a c callback.
 // need to look into this further to understand exactly what is going on.
+// https://www.youtube.com/watch?v=pWZS1MtxI-A
 int Gap::gap_event_handler(struct ble_gap_event *event, void *arg)
 {
-    Gap* self = static_cast<Gap*>(arg); // <--- Cast the void* back to Gap*
-    return self->handle_gap_event(event); // <--- Call a non-static member
+    Gap* self = static_cast<Gap*>(arg);
+    return self->handle_gap_event(event);
 }
 
 int Gap::handle_gap_event(struct ble_gap_event *event)
