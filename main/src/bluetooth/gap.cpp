@@ -93,7 +93,7 @@ void Gap::format_addr(char *addr_str, uint8_t addr[])
             addr[2], addr[3], addr[4], addr[5]);
 }
 
-// gpt wrote this. this allows be to access members of the class through a c callback.
+// gpt wrote this. this allows me to access members of the class through a c callback.
 // need to look into this further to understand exactly what is going on.
 int Gap::gap_event_handler(struct ble_gap_event *event, void *arg)
 {
