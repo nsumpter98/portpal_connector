@@ -4,6 +4,7 @@
 #include "common.hpp"
 #include "queue_manager.hpp"
 #include "vector"
+#include <memory>
 
 /* NimBLE GATT APIs */
 #include "host/ble_gatt.h"
@@ -42,7 +43,7 @@ public:
      *      - Characteristic register event
      *      - Descriptor register event
      */
-    void gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg);
+    static void gatt_svr_register_cb(struct ble_gatt_register_ctxt *ctxt, void *arg);
 
     /*
      *  GATT server initialization
@@ -55,6 +56,8 @@ public:
 private:
     // decided to use vector here to simplify the resizing of memory
     std::vector<ble_gatt_svc_def> gatt_svcs;
+    std::unique_ptr<ble_gatt_svc_def[]> gatt_svr_svcs;
+    size_t svc_count = 0;
 };
 
 #endif // GATT_SVR_H
